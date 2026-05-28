@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from db.database import get_db
 from db.models import SimulationResult, Match
@@ -14,7 +14,8 @@ def analyze_match(match_id: int, profile_id: int = Query(None), db: Session = De
         raise HTTPException(404, "Match not found")
 
     sim_result = run_simulation(match_id, profile_id, n=10000)
-    advice = generate_advice(sim_result)
+    odds = sim_result.get("odds", {"home": 2.0, "draw": 3.5, "away": 3.5})
+    advice = generate_advice(sim_result, odds["home"], odds["draw"], odds["away"])
 
     return {"simulation": sim_result, "advice": advice}
 
