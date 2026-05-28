@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量化足球系统</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="app-header">
+        <h1>⚽ 量化足球系统</h1>
+        <span id="current-profile">方案: 默认联赛模式</span>
+    </header>
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="filter-bar">
+                <select id="league-filter" onchange="loadMatches()">
+                    <option value="">全部联赛</option>
+                    <option value="英超">英超</option>
+                    <option value="西甲">西甲</option>
+                    <option value="德甲">德甲</option>
+                    <option value="意甲">意甲</option>
+                    <option value="法甲">法甲</option>
+                    <option value="欧冠">欧冠</option>
+                    <option value="世界杯">世界杯</option>
+                </select>
+                <input type="date" id="date-filter" onchange="loadMatches()">
+            </div>
+            <ul id="match-list" class="match-list"></ul>
+        </aside>
+
+        <main class="main-panel" id="main-panel">
+            <div class="placeholder">选择一场比赛开始分析</div>
+        </main>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
