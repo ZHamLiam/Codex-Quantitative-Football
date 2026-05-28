@@ -1,5 +1,5 @@
-﻿from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session, joinedload
 from db.database import get_db
 from db.models import Match
 
@@ -14,7 +14,14 @@ def list_matches(league: str = None, date_from: str = None, date_to: str = None,
         q = q.filter(Match.match_date >= date_from)
     if date_to:
         q = q.filter(Match.match_date <= date_to)
-    return q.order_by(Match.match_date).all()
+    matches = q.order_by(Match.match_date).all()
+    return [{
+        "id": m.id, "match_date": m.match_date.isoformat(),
+        "league": m.league, "stage": m.stage, "status": m.status,
+        "home_team": {"id": m.home_team_id, "name": m.home_team.name} if m.home_team else {"id": m.home_team_id, "name": "?"},
+        "away_team": {"id": m.away_team_id, "name": m.away_team.name} if m.away_team else {"id": m.away_team_id, "name": "?"},
+        "home_score": m.home_score, "away_score": m.away_score,
+    } for m in matches]
 
 @router.get("/{match_id}")
 def get_match(match_id: int, db: Session = Depends(get_db)):
