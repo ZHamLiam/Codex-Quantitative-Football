@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,6 @@
         <h1>⚽ 量化足球系统</h1>
         <span id="current-profile">方案: 默认联赛模式</span>
     </header>
-
     <div class="app-layout">
         <aside class="sidebar">
             <div class="filter-bar">
@@ -25,16 +24,20 @@
                     <option value="欧冠">欧冠</option>
                     <option value="世界杯">世界杯</option>
                 </select>
-                <input type="date" id="date-filter" onchange="loadMatches()">
+            </div>
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchMode('upcoming')">即将开始</button>
+                <button class="tab-btn" onclick="switchMode('history')">历史比赛</button>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="search-input" placeholder="搜索球队..." oninput="loadMatches()">
             </div>
             <ul id="match-list" class="match-list"></ul>
         </aside>
-
         <main class="main-panel" id="main-panel">
             <div class="placeholder">选择一场比赛开始分析</div>
         </main>
     </div>
-
     <script src="/js/app.js"></script>
 </body>
 </html>
