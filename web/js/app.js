@@ -25,7 +25,28 @@ async function loadMatches() {
 
 async function selectMatch(matchId) {
     currentMatchId = matchId;
-    await loadMatches();
+    await 
+function _renderUpsetCard(ua) {
+    if (!ua) return '<p style="color:var(--text-dim);">No data</p>';
+    var upsetIcon = ua.upset_risk === 'HIGH' ? '!! RED FLAG !!' : 'LOW RISK';
+    var upsetColor = ua.upset_risk === 'HIGH' ? 'var(--red)' : 'var(--green)';
+    var goalsIcon = ua.big_score_risk === 'HIGH' ? '!! LIKELY !!' : 'UNLIKELY';
+    var goalsColor = ua.big_score_risk === 'HIGH' ? 'var(--yellow)' : 'var(--text-dim)';
+
+    return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
+        + '<div style="padding:12px;background:var(--bg);border-radius:6px;border-left:3px solid ' + upsetColor + ';">'
+        + '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;">UPSET RISK</div>'
+        + '<div style="font-size:20px;font-weight:700;color:' + upsetColor + ';">' + upsetIcon + '</div>'
+        + '<div style="font-size:12px;color:var(--text-dim);margin-top:4px;">' + ua.underdog + ' win: ' + ua.underdog_win_pct + '%</div>'
+        + '<div style="font-size:10px;color:var(--text-dim);">Favorite: ' + ua.favorite + ' | Threshold: ' + ua.upset_threshold + '%</div></div>'
+        + '<div style="padding:12px;background:var(--bg);border-radius:6px;border-left:3px solid ' + goalsColor + ';">'
+        + '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;">BIG SCORE</div>'
+        + '<div style="font-size:20px;font-weight:700;color:' + goalsColor + ';">' + goalsIcon + '</div>'
+        + '<div style="font-size:12px;color:var(--text-dim);margin-top:4px;">Expected: ' + ua.expected_goals + ' goals</div>'
+        + '<div style="font-size:10px;color:var(--text-dim);">Threshold: ' + ua.goals_threshold + ' goals</div></div></div>';
+}
+
+loadMatches();
     try {
         const resp = await fetch(API + '/matches/' + matchId);
         const match = await resp.json();
@@ -193,6 +214,27 @@ async function createProfile() {
 async function switchProfile(id) {
     currentProfileId = parseInt(id);
     await loadFactorPanel();
+}
+
+
+function _renderUpsetCard(ua) {
+    if (!ua) return '<p style="color:var(--text-dim);">No data</p>';
+    var upsetIcon = ua.upset_risk === 'HIGH' ? '!! RED FLAG !!' : 'LOW RISK';
+    var upsetColor = ua.upset_risk === 'HIGH' ? 'var(--red)' : 'var(--green)';
+    var goalsIcon = ua.big_score_risk === 'HIGH' ? '!! LIKELY !!' : 'UNLIKELY';
+    var goalsColor = ua.big_score_risk === 'HIGH' ? 'var(--yellow)' : 'var(--text-dim)';
+
+    return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
+        + '<div style="padding:12px;background:var(--bg);border-radius:6px;border-left:3px solid ' + upsetColor + ';">'
+        + '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;">UPSET RISK</div>'
+        + '<div style="font-size:20px;font-weight:700;color:' + upsetColor + ';">' + upsetIcon + '</div>'
+        + '<div style="font-size:12px;color:var(--text-dim);margin-top:4px;">' + ua.underdog + ' win: ' + ua.underdog_win_pct + '%</div>'
+        + '<div style="font-size:10px;color:var(--text-dim);">Favorite: ' + ua.favorite + ' | Threshold: ' + ua.upset_threshold + '%</div></div>'
+        + '<div style="padding:12px;background:var(--bg);border-radius:6px;border-left:3px solid ' + goalsColor + ';">'
+        + '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;">BIG SCORE</div>'
+        + '<div style="font-size:20px;font-weight:700;color:' + goalsColor + ';">' + goalsIcon + '</div>'
+        + '<div style="font-size:12px;color:var(--text-dim);margin-top:4px;">Expected: ' + ua.expected_goals + ' goals</div>'
+        + '<div style="font-size:10px;color:var(--text-dim);">Threshold: ' + ua.goals_threshold + ' goals</div></div></div>';
 }
 
 loadMatches();
