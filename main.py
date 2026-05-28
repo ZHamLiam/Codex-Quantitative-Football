@@ -8,4 +8,10 @@ app = FastAPI(title="量化足球系统")
 def health():
     return {"status": "ok"}
 
+from api import factors, profiles, matches, analysis
+app.include_router(factors.router)
+app.include_router(profiles.router)
+app.include_router(matches.router)
+app.include_router(analysis.router)
+
 app.mount("/", StaticFiles(directory="web", html=True), name="web")
