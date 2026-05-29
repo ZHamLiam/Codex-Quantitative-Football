@@ -1,5 +1,5 @@
-﻿from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session, joinedload
 from pydantic import BaseModel
 from db.database import get_db
 from db.models import FactorProfile, FactorProfileItem, FactorConfig
@@ -24,8 +24,24 @@ def get_profile(profile_id: int, db: Session = Depends(get_db)):
     p = db.query(FactorProfile).filter_by(id=profile_id).first()
     if not p:
         raise HTTPException(404, "Profile not found")
-    items = db.query(FactorProfileItem).filter_by(profile_id=profile_id).all()
-    return {"profile": p, "items": items}
+    items = db.query(FactorProfileItem).options(joinedload(FactorProfileItem.factor)).filter_by(profile_id=profile_id).all()
+    result_items = []
+    for item in items:
+        result_items.append({
+            "id": item.id,
+            "profile_id": item.profile_id,
+            "factor_config_id": item.factor_config_id,
+            "weight": item.weight,
+            "enabled": item.enabled,
+            "factor": {
+                "id": item.factor.id,
+                "name": item.factor.name,
+                "category": item.factor.category,
+                "description": item.factor.description,
+                "is_custom": item.factor.is_custom,
+            } if item.factor else None,
+        })
+    return {"profile": p, "items": result_items}
 
 @router.post("")
 def create_profile(data: ProfileCreate, base_profile_id: int = None, db: Session = Depends(get_db)):
@@ -49,11 +65,11 @@ def create_profile(data: ProfileCreate, base_profile_id: int = None, db: Session
     return profile
 
 @router.put("/{profile_id}/items")
-def update_profile_items(profile_id: int, items: list[ProfileItemUpdate], db: Session = Depends(get_db)):
+def update_profile_items(profile_id: int, items_input: list[ProfileItemUpdate], db: Session = Depends(get_db)):
     profile = db.query(FactorProfile).filter_by(id=profile_id).first()
     if not profile:
         raise HTTPException(404, "Profile not found")
-    for item_data in items:
+    for item_data in items_input:
         existing = db.query(FactorProfileItem).filter_by(profile_id=profile_id, factor_config_id=item_data.factor_config_id).first()
         if existing:
             existing.weight = item_data.weight
