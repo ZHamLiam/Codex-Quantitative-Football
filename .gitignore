@@ -5,3 +5,5 @@ db/sqlite.db
 .superpowers/
 *.egg-info/
 dist/
+.playwright-cli/
+_check_rss.py
