@@ -1,0 +1,22 @@
+# Factor data source mapping
+FACTOR_SOURCES = {
+    "近期战绩": "ClubElo Elo评分差值",
+    "主客场分离": "ClubElo Elo评分差值",
+    "阵容完整度": "DeepSeek + RSS新闻分析",
+    "射手状态": "ClubElo 球队ElO评分",
+    "配合默契度": "DeepSeek + RSS新闻分析",
+    "教练稳定性": "ClubElo Elo评分",
+    "控球率倾向": "ClubElo Elo评分差值",
+    "进攻方式": "ClubElo Elo评分差值",
+    "防守风格": "系统默认值",
+    "风格克制": "ClubElo Elo评分差值",
+    "天气": "DeepSeek + RSS新闻分析",
+    "裁判风格": "DeepSeek + RSS新闻分析",
+    "旅途疲劳": "系统默认值",
+    "赛程密度": "系统默认值",
+    "战意": "系统默认值",
+    "历史交锋": "DeepSeek + RSS新闻分析",
+    "近期士气": "football-data.org比赛结果",
+    "大赛经验": "ClubElo Elo评分",
+    "赔率变化": "The Odds API实时赔率",
+}

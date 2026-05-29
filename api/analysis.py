@@ -4,6 +4,7 @@ from db.database import get_db
 from db.models import SimulationResult, Match
 from engines.simulation.runner import run_simulation, compute_real_factors
 from engines.strategy.bet import generate_advice
+from engines.analysis.factor_sources import FACTOR_SOURCES
 from llm.interpreter import interpret_results, get_upset_metrics
 
 router = APIRouter(prefix="/api/matches", tags=["analysis"])
@@ -22,7 +23,7 @@ def analyze_match(match_id: int, profile_id: int = Query(None), db: Session = De
     factor_summary = {}
     for k, v in sorted(factor_inputs.items()):
         if v != 50 and not k.startswith("_"):
-            factor_summary[k] = v
+            factor_summary[k] = dict(value=v, source=FACTOR_SOURCES.get(k, '系统默认值'))
 
     match_info = {
         "home_team": m.home_team.name, "away_team": m.away_team.name,

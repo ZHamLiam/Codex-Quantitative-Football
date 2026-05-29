@@ -99,13 +99,6 @@ function renderResults(data) {
         scoreHtml += '<div class="score-item"><div class="score">' + entries[i][0] + '</div><div class="pct">' + entries[i][1] + '%</div></div>';
     }
 
-    var factorRows = '';
-    for (var k in factors) {
-        var val = factors[k];
-        var color = val > 55 ? 'var(--green)' : val < 45 ? 'var(--red)' : 'var(--text-dim)';
-        factorRows += '<span style="color:' + color + ';margin-right:12px;font-size:12px;">' + k + ' ' + val.toFixed(0) + '</span>';
-    }
-
     var suggClass = adv.suggestion;
     var suggLabel = adv.suggestion === 'buy' ? '✅ 建议买入' : adv.suggestion === 'watch' ? '⚠️ 观望' : '🚫 回避';
     var bestLabel = adv.best_pick === 'home' ? '主胜' : adv.best_pick === 'draw' ? '平局' : '客胜';
@@ -119,7 +112,7 @@ function renderResults(data) {
         + '<div class="result-labels"><span>主胜 ' + sim.home_win_pct + '%</span><span>平局 ' + sim.draw_pct + '%</span><span>客胜 ' + sim.away_win_pct + '%</span></div>'
         + '<p style="margin-top:8px;font-size:12px;color:var(--text-dim);">期望总进球: ' + sim.expected_goals + ' | 波动系数: ' + sim.variance + ' | λ主: ' + sim.lambda_home + ' / λ客: ' + sim.lambda_away + '</p></div>'
 
-        + '<div class="card"><h3>关键因子</h3><div style="line-height:2.2;">' + factorRows + '</div></div>'
+        + '<div class="card"><h3>关键因子</h3>' + _renderFactorBars(factors) + '</div>'
 
         + _renderUpsetCard(data.upset_analysis)
 
@@ -150,7 +143,41 @@ function _renderUpsetCard(ua) {
         + '</div></div>';
 }
 
+function _renderFactorBars(factors) {
+    if (!factors) return '<p>No data</p>';
+    var items = Object.keys(factors);
+    if (items.length === 0) return '<p style="color:var(--text-dim);">所有因子均为默认值</p>';
+    var html = '';
+    for (var idx = 0; idx < items.length; idx++) {
+        var k = items[idx];
+        var item = factors[k];
+        var val = 0;
+        var source = '';
+        if (typeof item === 'object' && item !== null) {
+            val = item.value !== undefined ? item.value : 50;
+            source = item.source || '';
+        } else {
+            val = item;
+        }
+        var pct = Math.max(2, Math.min(98, val));
+        var barColor = val > 55 ? '#1a4a2e' : val < 45 ? '#4a1a1a' : '#2a2d3a';
+        var textColor = val > 55 ? 'var(--green)' : val < 45 ? 'var(--red)' : 'var(--text-dim)';
+        html += '<div style="margin-bottom:14px;">';
+        html += '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">';
+        html += '<span style="color:var(--text);font-weight:600;">' + k + '</span>';
+        html += '<span style="color:' + textColor + ';font-weight:700;">' + val.toFixed(1) + '</span></div>';
+        html += '<div style="height:8px;background:var(--bg);border-radius:4px;overflow:hidden;">';
+        html += '<div style="height:100%;width:' + pct + '%;background:' + textColor + ';border-radius:4px;opacity:0.8;"></div></div>';
+        if (source) {
+            html += '<div style="font-size:10px;color:var(--text-dim);margin-top:2px;">数据来源: ' + source + '</div>';
+        }
+        html += '</div>';
+    }
+    return html;
+}
+
 async function loadFactorPanel() {
+
     try {
         var profilesResp = await fetch(API + '/profiles');
         var profiles = await profilesResp.json();
@@ -175,7 +202,7 @@ async function loadFactorPanel() {
                 factorHtml += '<div class="factor-row" data-item-id="' + i.id + '">'
                     + '<input type="checkbox" ' + (i.enabled ? 'checked' : '') + '>'
                     + '<label>' + (i.factor ? i.factor.name : '?') + '</label>'
-                    + '<input type="range" min="0" max="30" value="' + i.weight + '" oninput="this.nextElementSibling.textContent=this.value">'
+                    + '<input type="range" min="0" max="30" value="' + i.weight + '" oninput="updateSlider(this)">'
                     + '<span class="weight-val">' + i.weight + '</span></div>';
             });
             factorHtml += '</div>';
@@ -188,6 +215,11 @@ async function loadFactorPanel() {
             + '<button onclick="saveProfile()">保存</button><button onclick="createProfile()">新建</button></div>'
             + factorHtml + '</div>';
     } catch(e) { console.error(e); }
+}
+
+function updateSlider(el) {
+    var next = el.nextElementSibling;
+    if (next) next.textContent = el.value;
 }
 
 async function saveProfile() {
