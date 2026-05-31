@@ -70,14 +70,34 @@ $env:PYTHONPATH = "."
 python db/seed.py
 ```
 
-### 4. 启动服务
+### 4. 初始化数据（首次运行）
 
 ```bash
+# 设置 Python 路径后执行数据库初始化
+# PowerShell:
+$env:PYTHONPATH = "."
+python db/seed.py
+
+# Linux/macOS:
+PYTHONPATH=. python db/seed.py
+```
+
+### 5. 启动服务
+
+**PowerShell（推荐）：**
+```powershell
+cd 项目目录
 $env:PYTHONPATH = "."
 python -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
-浏览器打开 `http://127.0.0.1:8000/`
+**Linux/macOS：**
+```bash
+cd 项目目录
+PYTHONPATH=. python -m uvicorn main:app --host 127.0.0.1 --port 8000
+```
+
+启动后浏览器访问 `http://127.0.0.1:8000/`
 
 ## 因子体系
 
